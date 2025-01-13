@@ -26,6 +26,25 @@ function App () {
     });
   };
   const filterData =() => {
-    
-  }
+    if (countriesSearch === "") {
+      setFilteredData(cities);
+    } else {
+      setFilteredData (
+        cities 
+        .filter((city) => 
+        city.toLowerCase().startsWith(countriesSearch.toLowerCase)
+      )
+      .slice(0, 5)
+      );
+    }
+  };
+  return (
+    <div className="App">
+      {loading && <p>Loading</p>}
+      <div>
+    <input onChange  placeholder= "Search country" /> //ene dutuu
+    </div>
+    </div>
+  )
+  
 }
