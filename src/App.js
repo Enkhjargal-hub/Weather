@@ -1,50 +1,72 @@
 
 import './App.css';
-import {useEffect, useState} from "react";
-import {citiesFilter} from "./utils/CitiesFilter";
+import { useEffect, useState, useCallback } from "react";
+import { citiesFilter } from "./utils/CitiesFilter";
 
-function App () {
+function App() {
   const [countriesSearch, setCountriesSearch] = useState("");
-  const [filteredData, setFilteredData] = useState ([]);
+  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [cities, setCities] = useState([]);
 
   const fetchData = async () => {
     setLoading(true);
-    await fetch ("https://countriesnow.space/api/v0.1/countries")
-    .then((response) => response.json())
-    .then((result) => {
+    try {
+      const response = await fetch("https://countriesnow.space/api/v0.1/countries");
+      const result = await response.json();
       const countriesAndCity = citiesFilter(result.data);
-      setCities (countriesAndCity);
+      setCities(countriesAndCity);
       setFilteredData(countriesAndCity);
-    })
-    .catch((error) => {
-      console.log("Error", error);
-    })
-    .finally(() => {
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    } finally {
       setLoading(false);
-    });
+    }
   };
-  const filterData =() => {
+
+  const filterData = useCallback(() => {
     if (countriesSearch === "") {
       setFilteredData(cities);
     } else {
-      setFilteredData (
-        cities 
-        .filter((city) => 
-        city.toLowerCase().startsWith(countriesSearch.toLowerCase)
-      )
-      .slice(0, 5)
+      setFilteredData(
+        cities
+          .filter((city) =>
+            city.toLowerCase().startsWith(countriesSearch.toLowerCase())
+          )
+          .slice(0, 5)
       );
     }
+  }, [countriesSearch, cities]);
+
+  useEffect(() => {
+    filterData();
+  }, [filterData]);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const handleChange = (event) => {
+    setCountriesSearch(event.target.value);
   };
+
   return (
     <div className="App">
-      {loading && <p>Loading</p>}
+      {loading && <p>Loading...</p>}
       <div>
-    <input onChange  placeholder= "Search country" /> //ene dutuu
+        <input
+          onChange={handleChange}
+          value={countriesSearch}
+          placeholder="Search country"
+        />
+      </div>
+      <div>
+        {filteredData.map((country, index) => (
+          <div key={index}>{country}</div>
+        ))}
+      </div>
     </div>
-    </div>
-  )
-  
+  );
 }
+
+export default App;
