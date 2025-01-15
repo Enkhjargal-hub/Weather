@@ -1,127 +1,73 @@
 import "./App.css";
-import { useEffect, useState, useCallback } from "react";
-import { citiesFilter } from "./utils/CitiesFilter";
+import { useState, useEffect, useCallback } from "react";
+import WeatherCard from "./components/weatherCard";
 
 function App() {
-  const [countriesSearch, setCountriesSearch] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [cities, setCities] = useState([]);
+  const [countriesSearch, setCountriesSearch] = useState("Ulaanbaatar"); // Эхний хот оруулалт
+  const [weatherData, setWeatherData] = useState(null); // Цаг агаарын мэдээлэл хадгалахад
+  const [loading, setLoading] = useState(false); // Ачаалж байгаа эсэхийг илэрхийлнэ
+  const [isDayTime, setIsDayTime] = useState(true); // Өдөр эсвэл шөнө байна уу?
 
-  const fetchData = async () => {
-    setLoading(true);
+  const fetchWeatherData = useCallback(async (city) => {
+    setLoading(true); // Ачаалах үедээ ачааллыг эхлүүлнэ
     try {
       const response = await fetch(
-        "https://countriesnow.space/api/v0.1/countries"
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=YOUR_API_KEY&units=metric` // Үндсэн API хүсэлт
       );
-      const result = await response.json();
-      const countriesAndCity = citiesFilter(result.data);
-      setCities(countriesAndCity);
-      setFilteredData(countriesAndCity);
+      if (!response.ok) {
+        throw new Error(`Цаг агаарын мэдээлэл авахад алдаа гарлаа: ${response.status}`);
+      }
+      const data = await response.json();
+      setWeatherData({
+        city: data.name,
+        temperature: data.main.temp,
+        condition: data.weather[0].main,
+        icon: data.weather[0].icon,
+      });
+      const currentHour = new Date().getHours(); // Одоо цагийг шалгана
+      setIsDayTime(currentHour >= 6 && currentHour < 18); // Өдөр үү, шөнө үү гэдгийг шалгах
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Цаг агаарын мэдээлэл авахад алдаа гарлаа:", error);
+      setWeatherData(null); // Алдаа гарах үед мэдээллийг цэвэрлэнэ
     } finally {
-      setLoading(false);
+      setLoading(false); // Ачаалал дуусах үедээ
     }
-  };
-
-  const filterData = useCallback(() => {
-    if (countriesSearch === "") {
-      setFilteredData(cities);
-    } else {
-      setFilteredData(
-        cities
-          .filter((city) =>
-            city.toLowerCase().startsWith(countriesSearch.toLowerCase())
-          )
-          .slice(0, 5)
-      );
-    }
-  }, [countriesSearch, cities]);
-
-  useEffect(() => {
-    filterData();
-  }, [filterData]);
-
-  useEffect(() => {
-    fetchData();
   }, []);
 
-  const handleChange = (event) => {
-    setCountriesSearch(event.target.value);
+  useEffect(() => {
+    fetchWeatherData(countriesSearch); // Эхний хот дээр хүсэлт хийж байна
+  }, [countriesSearch, fetchWeatherData]);
+
+  const handleSearch = () => {
+    if (countriesSearch.trim() !== "") { // Хоосон утга оруулсан эсэхийг шалгана
+      fetchWeatherData(countriesSearch);
+    }
   };
 
   return (
-    <div className="App">
-      <div>
-        {/* <img
-        className="Photo"
-        src="/img/Screenshot 2025-01-13 at 5.58.41 PM.png"
-        alt="Screenshot"
-      /> */}
-      </div>
-      <div>
-        <div className="Sun">
-          <div>
-            <h4 className="Date">January 14, 2025</h4>
-            <h2 className="World">Ulaanbaatar</h2>
-            <div>
-              <svg
-                xmlns:xlink="http://www.w3.org/1999/xlink"
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                class="lucide lucide-map-pin text-gray-600"
-              >
-                <path
-                  d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"
-                  stroke="#4B5563"
-                  fill="none"
-                  stroke-width="2px"
-                ></path>
-                <circle
-                  cx="12"
-                  cy="10"
-                  r="3"
-                  stroke="#4B5563"
-                  fill="none"
-                  stroke-width="2px"
-                ></circle>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-
-        <div className="Moon">
-          <div>
-        <h4 className="Date">January 14, 2025</h4>
-        <h2 className="World">Ulaanbaatar</h2>
-        <div><svg xmlns:xlink="http://www.w3.org/1999/xlink" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-map-pin text-gray-600"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0" stroke="#4B5563" fill="none" stroke-width="2px"></path><circle cx="12" cy="10" r="3" stroke="#4B5563" fill="none" stroke-width="2px"></circle></svg></div>
-        </div>
-        <div>
-        </div>
-        </div>
-      </div>
-      {loading && <p>Loading...</p>}
-      <div>
+    <div className={`app-container ${isDayTime ? "day" : "night"}`}>
+      <div className="search-container">
         <input
-          onChange={handleChange}
+          type="text"
           value={countriesSearch}
-          placeholder="Search country"
+          onChange={(e) => setCountriesSearch(e.target.value)} // Хайлт хийхээр текстийг өөрчлөнө
+          placeholder="Хот оруулна уу"
+          className="search-input"
         />
+        <button onClick={handleSearch} className="search-button">
+          Хайх
+        </button>
       </div>
-      <div>
-        {filteredData.map((country, index) => (
-          <div key={index}>{country}</div>
-        ))}
-      </div>
+      {loading && <p className="loading">Ачааллаж байна...</p>}
+      {weatherData && (
+        <WeatherCard
+          city={weatherData.city}
+          temperature={weatherData.temperature}
+          condition={weatherData.condition}
+          icon={weatherData.icon}
+          isDayTime={isDayTime}
+        />
+      )}
     </div>
   );
 }
