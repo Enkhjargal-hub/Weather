@@ -56,12 +56,12 @@ body {
 }
 
 .day-button {
-  background-color: #ffd700; /* Yellow for day */
+  background-color: #ffd700; 
   color: #000;
 }
 
 .night-button {
-  background-color: #4b0082; /* Indigo for night */
+  background-color: #4b0082; 
   color: #fff;
 }
 
@@ -73,7 +73,6 @@ body {
   background-color: #3a0077;
 }
 
-/* Loading message */
 .loading {
   font-size: 18px;
   font-weight: bold;

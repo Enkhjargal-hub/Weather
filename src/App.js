@@ -7,33 +7,35 @@ const WeatherApiKey = "5c16f05f953742f5b6b22254251501";  // Таны API түл�
 function App() {
   const [countriesSearch, setCountriesSearch] = useState("Ulaanbaatar");
   const [suggestedCountries, setSuggestedCountries] = useState([]); // Харьцах улс
-  const [suggestedCities, setSuggestedCities] = useState([]); // Хотын жагсаалт
+  const [suggestedCities, setSuggestedCities] = useState([]); // Хотын жагсаалтыг хадгалах
   const [weatherData, setWeatherData] = useState({ day: null, night: null });
   const [loading, setLoading] = useState(false);
-  const [isDayTime, setIsDayTime] = useState(true);
+  const [isDayTime, setIsDayTime] = useState(true); // Өдөр эсвэл шөнийн өгөгдлийг хянах
+  const [selectedLocation, setSelectedLocation] = useState({ city: "", country: "" });
 
-  const fetchWeatherData = useCallback(async (city) => {
+  // Fetch weather data
+  const fetchWeatherData = useCallback(async (city, timeOfDay = 'day') => {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.weatherapi.com/v1/forecast.json?key=${WeatherApiKey}&q=${city}&days=2`,  // correct endpoint
+        `https://api.weatherapi.com/v1/forecast.json?key=${WeatherApiKey}&q=${city}&days=2`,
         { method: "get", headers: { "Content-Type": "application/json" } }
       );
       if (!response.ok) {
         throw new Error(`Error fetching weather data: ${response.status}`);
       }
       const data = await response.json();
-  
+
       const dayData = data.forecast.forecastday[0].hour.find((item) => {
         const hour = new Date(item.time).getHours();
         return hour === 12; // Өдрийн 12 цагийн мэдээлэл
       });
-  
+
       const nightData = data.forecast.forecastday[0].hour.find((item) => {
         const hour = new Date(item.time).getHours();
         return hour === 0; // Шөнийн 12 цагийн мэдээлэл
       });
-  
+
       setWeatherData({
         day: {
           date: dayData?.time.split(" ")[0],
@@ -55,7 +57,6 @@ function App() {
       setLoading(false);
     }
   }, []);
-  
 
   // Улсын жагсаалтыг татаж авах
   const fetchCountries = async (query) => {
@@ -65,7 +66,7 @@ function App() {
       const filteredCountries = data.data.filter((country) =>
         country.name.toLowerCase().includes(query.toLowerCase())
       );
-      setSuggestedCountries(filteredCountries);  // Хэрэглэгчийн хайлт дээр үндэслэн улсуудаа харуулна
+      setSuggestedCountries(filteredCountries);
     } catch (error) {
       console.error("Error fetching country list:", error);
       setSuggestedCountries([]);
@@ -88,20 +89,25 @@ function App() {
     fetchWeatherData(countriesSearch);
   }, [countriesSearch, fetchWeatherData]);
 
+  // Search handler
   const handleSearch = () => {
     if (countriesSearch.trim() !== "") {
       fetchWeatherData(countriesSearch);
     }
   };
 
+  // Country selection handler
   const handleCountrySelect = (country) => {
     setCountriesSearch(country.name);
     fetchCities(country.name);  // Хотын жагсаалтыг татах
     setSuggestedCountries([]);
   };
 
+  // City selection handler
   const handleCitySelect = (city) => {
-    setCountriesSearch(city);
+    const cityAndCountry = `${city}, ${countriesSearch.split(',')[1] || ""}`; // Combine city and country
+    setCountriesSearch(cityAndCountry);
+    setSelectedLocation({ city, country: countriesSearch.split(',')[1] || "" }); // Store selected city and country
     fetchWeatherData(city);
     setSuggestedCities([]);
   };
@@ -116,7 +122,7 @@ function App() {
             setCountriesSearch(e.target.value);
             fetchCountries(e.target.value);  // Улсаар хайлт хийх
           }}
-          placeholder="Search for a country or city"
+          placeholder="Search for a city"
           className="search-input"
         />
         <button onClick={handleSearch} className="search-button">
@@ -145,18 +151,26 @@ function App() {
       )}
 
       <div className="button-container">
-        <button onClick={() => setIsDayTime(true)} className="day-button">
+        <button onClick={() => { setIsDayTime(true); fetchWeatherData(countriesSearch, 'day'); }} className="day-button">
           Өдөр
         </button>
-        <button onClick={() => setIsDayTime(false)} className="night-button">
+        <button onClick={() => { setIsDayTime(false); fetchWeatherData(countriesSearch, 'night'); }} className="night-button">
           Шөнө
         </button>
       </div>
 
       {loading && <p className="loading">Loading</p>}
 
-      {weatherData.day && weatherData.night && (
-        <div className="weather-container">
+      {/* Display selected city and country */}
+      {selectedLocation.city && selectedLocation.country && (
+        <div>
+          <h2>{selectedLocation.city}, {selectedLocation.country}</h2>
+        </div>
+      )}
+
+      {/* Weather container */}
+      <div className="weather-container">
+        {isDayTime && weatherData.day && (
           <div className="day-weather">
             <WeatherCard
               title="Өдөр"
@@ -166,6 +180,8 @@ function App() {
               condition={weatherData.day.condition}
             />
           </div>
+        )}
+        {!isDayTime && weatherData.night && (
           <div className="night-weather">
             <WeatherCard
               title="Шөнө"
@@ -175,8 +191,8 @@ function App() {
               condition={weatherData.night.condition}
             />
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
