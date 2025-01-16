@@ -1,48 +1,43 @@
-import "./App.css";
+import './tailwind.css';
 import { useState, useEffect, useCallback } from "react";
 import WeatherCard from "./components/WeatherCard";
+import Day from './img/Day.png';  
+import Night from './img/Night.png'; 
+import Zurag from './img/Zurag.png';
+
+
 
 const WeatherApiKey = "5c16f05f953742f5b6b22254251501";
 
 function App() {
   const [countriesSearch, setCountriesSearch] = useState("Ulaanbaatar");
-  const [suggestedCountries, setSuggestedCountries] = useState([]); // Харьцах улс
-  const [suggestedCities, setSuggestedCities] = useState([]); // Хотын жагсаалтыг хадгалах
   const [weatherData, setWeatherData] = useState({ day: null, night: null });
   const [loading, setLoading] = useState(false);
-  const [isDayTime, setIsDayTime] = useState(true); // Өдөр эсвэл шөнийн өгөгдлийг хянах
-  const [selectedLocation, setSelectedLocation] = useState({
-    city: "",
-    country: "",
-  });
 
-  const fetchWeatherData = useCallback(async (city, timeOfDay = "day") => {
+  const fetchWeatherData = useCallback(async (city) => {
     setLoading(true);
     try {
       const response = await fetch(
         `https://api.weatherapi.com/v1/forecast.json?key=${WeatherApiKey}&q=${city}&days=2`,
         { method: "get", headers: { "Content-Type": "application/json" } }
       );
-      if (!response.ok) {
-        throw new Error(`Error fetching weather data: ${response.status}`);
-      }
       const data = await response.json();
 
       const dayData = data.forecast.forecastday[0].hour.find((item) => {
         const hour = new Date(item.time).getHours();
-        return hour === 12; // Өдрийн 12 цагийн мэдээлэл
+        return hour === 12;
       });
 
       const nightData = data.forecast.forecastday[0].hour.find((item) => {
         const hour = new Date(item.time).getHours();
-        return hour === 0; // Шөнийн 12 цагийн мэдээлэл
+        return hour === 0;
       });
 
       setWeatherData({
         day: {
           date: dayData?.time.split(" ")[0],
           maxTemp: dayData?.temp_c,
-          minTemp: dayData?.temp_c, 
+          minTemp: dayData?.temp_c,
           condition: dayData?.condition.text,
         },
         night: {
@@ -60,40 +55,9 @@ function App() {
     }
   }, []);
 
-  // Улсын жагсаалтыг татах
-  const fetchCountries = async (query) => {
-    try {
-      const response = await fetch(
-        `https://countriesnow.space/api/v0.1/countries`
-      );
-      const data = await response.json();
-      const filteredCountries = data.data.filter((country) =>
-        country.name.toLowerCase().includes(query.toLowerCase())
-      );
-      setSuggestedCountries(filteredCountries);
-    } catch (error) {
-      console.error("Error fetching country list:", error);
-      setSuggestedCountries([]);
-    }
-  };
-
-  // Хотын жагсаалт татах
-  const fetchCities = async (country) => {
-    try {
-      const response = await fetch(
-        `https://countriesnow.space/api/v0.1/countries/cities?q=${country}`
-      );
-      const data = await response.json();
-      setSuggestedCities(data.data || []);
-    } catch (error) {
-      console.error("Error fetching city list:", error);
-      setSuggestedCities([]);
-    }
-  };
-
   useEffect(() => {
     fetchWeatherData(countriesSearch);
-  }, [countriesSearch, fetchWeatherData]);
+  }, [countriesSearch]);
 
   const handleSearch = () => {
     if (countriesSearch.trim() !== "") {
@@ -101,120 +65,62 @@ function App() {
     }
   };
 
-  const handleCountrySelect = (country) => {
-    setCountriesSearch(country.name);
-    fetchCities(country.name); // Хотын жагсаалтыг татах
-    setSuggestedCountries([]);
-  };
-
-  const handleCitySelect = (city) => {
-    const cityAndCountry = `${city}, ${countriesSearch.split(",")[1] || ""}`; 
-    setCountriesSearch(cityAndCountry);
-    setSelectedLocation({ city, country: countriesSearch.split(",")[1] || "" }); 
-    fetchWeatherData(city);
-    setSuggestedCities([]);
-  };
-
   return (
-    <div className={`app-container ${isDayTime ? "day" : "night"}`}>
-      <h1 className="text-3xl font-bold underline flex flex-col items-center justify-center">Hello world!</h1>
+    <div className="app-container">
+  <img src={Zurag} alt="Background" className="background-image" />
+  <div className="search-container">
+    <input
+      type="text"
+      value={countriesSearch}
+      onChange={(e) => setCountriesSearch(e.target.value)}
+      placeholder="Search for a city"
+      className="search-input"
+    />
+    <button onClick={handleSearch} className="search-button">
+      Search
+    </button>
+  </div>
 
-      <div className="search-container">
-        <input
-          type="text"
-          value={countriesSearch}
-          onChange={(e) => {
-            setCountriesSearch(e.target.value);
-            fetchCountries(e.target.value); // Улсаар хайлт хийх
-          }}
-          placeholder="Search for a city"
-          className="search-input"
+  {loading && <p className="loading">Loading</p>}
+
+
+  <img src={Zurag} alt="Day" />
+  <img src={Night} alt="Night" />
+
+  <div className="weather-container">
+    {/* Day Weather Section */}
+    <div className="weather-side left">
+      {weatherData.day && (
+        <WeatherCard
+          title="Өдөр"
+          photo={Day}  // Pass the Day image path
+          date={weatherData.day.date}
+          maxTemp={weatherData.day.maxTemp}
+          minTemp={weatherData.day.minTemp}
+          condition={weatherData.day.condition}
         />
-        <button onClick={handleSearch} className="search-button">
-          Search
-        </button>
-      </div>
-
-      {suggestedCountries.length > 0 && (
-        <ul className="suggested-countries-list">
-          {suggestedCountries.map((country, index) => (
-            <li key={index} onClick={() => handleCountrySelect(country)}>
-              {country.name}
-            </li>
-          ))}
-        </ul>
       )}
-
-      {suggestedCities.length > 0 && (
-        <ul className="suggested-cities-list">
-          {suggestedCities.map((city, index) => (
-            <li key={index} onClick={() => handleCitySelect(city)}>
-              {city}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <div className="button-container">
-        <button
-          onClick={() => {
-            setIsDayTime(true);
-            fetchWeatherData(countriesSearch, "day");
-          }}
-          className="day-button"
-        >
-          Өдөр
-        </button>
-        <button
-          onClick={() => {
-            setIsDayTime(false);
-            fetchWeatherData(countriesSearch, "night");
-          }}
-          className="night-button"
-        >
-          Шөнө
-        </button>
-      </div>
-
-      {loading && <p className="loading">Loading</p>}
-
-      {selectedLocation.city && selectedLocation.country && (
-        <div>
-          <h2>
-            {selectedLocation.city}, {selectedLocation.country}
-          </h2>
-        </div>
-      )}
-
-      {/*  Weather container */}
-      <div className="weather-container">
-        {isDayTime && weatherData.day && (
-          <div className="day-weather">
-            <WeatherCard
-              title="Өдөр"
-              photo="/img/0657324bf17d1bd5169b60a7fbcb80b1.png"
-              date={weatherData.day.date}
-              maxTemp={weatherData.day.maxTemp}
-              minTemp={weatherData.day.minTemp}
-              condition={weatherData.day.condition}
-            />
-          </div>
-        )}
-        {!isDayTime && weatherData.night && (
-          <div className="night-weather">
-            <WeatherCard
-              title="Шөнө"
-              photo="/img/f01b7c0c0765dab6de4f9f5cbb022e1d.png"
-              date={weatherData.night.date}
-              maxTemp={weatherData.night.maxTemp}
-              minTemp={weatherData.night.minTemp}
-              condition={weatherData.night.condition}
-            />
-          </div>
-        )}
-      </div>
     </div>
+
+    {/* Night Weather Section */}
+    <div className="weather-side right">
+      {weatherData.night && (
+        <WeatherCard
+          title="Шөнө"
+          photo={Night}  // Pass the Night image path
+          date={weatherData.night.date}
+          maxTemp={weatherData.night.maxTemp}
+          minTemp={weatherData.night.minTemp}
+          condition={weatherData.night.condition}
+        />
+      )}
+    </div>
+  </div>
+</div>
+
   );
 }
 
 export default App;
+
+

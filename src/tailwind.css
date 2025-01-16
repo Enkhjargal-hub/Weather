@@ -1,0 +1,66 @@
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .background-image {
+    @apply absolute top-0 left-0 w-full h-full object-cover -z-10;
+  }
+
+  .app-container {
+    @apply relative w-full h-screen bg-gray-100 overflow-hidden;
+  }
+
+  .search-container {
+    @apply absolute top-5 left-5 z-10;
+  }
+
+  .weather-container {
+    @apply absolute top-[80px] left-0 right-0 px-20 flex justify-between;
+  }
+
+  .weather-side {
+    @apply w-[38%] h-[68%] flex justify-center items-center bg-white/80 p-5 rounded-lg shadow-lg text-center;
+  }
+
+  .left {
+    @apply text-center;
+  }
+
+  .right {
+    @apply text-center;
+  }
+
+  .search-input {
+    @apply p-2 text-lg;
+  }
+
+  .search-button {
+    @apply bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700;
+  }
+
+  .loading {
+    @apply text-center text-xl font-bold mt-5;
+  }
+
+  .button-container button {
+    @apply p-2 px-4 m-2 cursor-pointer;
+  }
+
+  .day-button {
+    @apply bg-yellow-500;
+  }
+
+  .night-button {
+    @apply bg-blue-700;
+  }
+
+  .background-image {
+    @apply w-full h-auto absolute top-0 left-0 -z-10;
+  }
+
+  .weather-image {
+    @apply flex justify-center items-center;
+  }
+}
