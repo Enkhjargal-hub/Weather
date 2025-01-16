@@ -42,7 +42,7 @@ function App() {
         day: {
           date: dayData?.time.split(" ")[0],
           maxTemp: dayData?.temp_c,
-          minTemp: dayData?.temp_c, // you can modify to actual minTemp if needed
+          minTemp: dayData?.temp_c, 
           condition: dayData?.condition.text,
         },
         night: {
@@ -60,7 +60,7 @@ function App() {
     }
   }, []);
 
-  // Улсын жагсаалтыг татаж авах
+  // Улсын жагсаалтыг татах
   const fetchCountries = async (query) => {
     try {
       const response = await fetch(
@@ -108,9 +108,9 @@ function App() {
   };
 
   const handleCitySelect = (city) => {
-    const cityAndCountry = `${city}, ${countriesSearch.split(",")[1] || ""}`; // Combine city and country
+    const cityAndCountry = `${city}, ${countriesSearch.split(",")[1] || ""}`; 
     setCountriesSearch(cityAndCountry);
-    setSelectedLocation({ city, country: countriesSearch.split(",")[1] || "" }); // Store selected city and country
+    setSelectedLocation({ city, country: countriesSearch.split(",")[1] || "" }); 
     fetchWeatherData(city);
     setSuggestedCities([]);
   };
