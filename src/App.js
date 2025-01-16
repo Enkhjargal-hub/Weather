@@ -57,7 +57,7 @@ function App() {
 
   useEffect(() => {
     fetchWeatherData(countriesSearch);
-  }, [countriesSearch]);
+  }, [countriesSearch, fetchWeatherData]);
 
   const handleSearch = () => {
     if (countriesSearch.trim() !== "") {
@@ -93,7 +93,7 @@ function App() {
       {weatherData.day && (
         <WeatherCard
           title="Өдөр"
-          photo={Day}  // Pass the Day image path
+          photo={Day}  
           date={weatherData.day.date}
           maxTemp={weatherData.day.maxTemp}
           minTemp={weatherData.day.minTemp}
@@ -107,7 +107,7 @@ function App() {
       {weatherData.night && (
         <WeatherCard
           title="Шөнө"
-          photo={Night}  // Pass the Night image path
+          photo={Night} 
           date={weatherData.night.date}
           maxTemp={weatherData.night.maxTemp}
           minTemp={weatherData.night.minTemp}
