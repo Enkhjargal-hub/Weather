@@ -2,11 +2,12 @@ import "./App.css";
 import { useState, useEffect, useCallback } from "react";
 import WeatherCard from "./components/WeatherCard";
 
-const WeatherApiKey = "5c16f05f953742f5b6b22254251501"; 
+const WeatherApiKey = "5c16f05f953742f5b6b22254251501";  // Таны API түлхүүр
 
 function App() {
   const [countriesSearch, setCountriesSearch] = useState("Ulaanbaatar");
-  const [suggestedCities, setSuggestedCities] = useState([]);
+  const [suggestedCountries, setSuggestedCountries] = useState([]); // Харьцах улс
+  const [suggestedCities, setSuggestedCities] = useState([]); // Хотын жагсаалт
   const [weatherData, setWeatherData] = useState({ day: null, night: null });
   const [loading, setLoading] = useState(false);
   const [isDayTime, setIsDayTime] = useState(true);
@@ -15,35 +16,36 @@ function App() {
     setLoading(true);
     try {
       const response = await fetch(
-        `https://api.openweathermap.org/data/2.5/forecast?q=${city}&appid=${WeatherApiKey}&units=metric`
+        `https://api.weatherapi.com/v1/forecast.json?key=${WeatherApiKey}&q=${city}&days=2`,  // correct endpoint
+        { method: "get", headers: { "Content-Type": "application/json" } }
       );
       if (!response.ok) {
         throw new Error(`Error fetching weather data: ${response.status}`);
       }
       const data = await response.json();
-
-      const dayData = data.list.find((item) => {
-        const hour = new Date(item.dt_txt).getHours();
+  
+      const dayData = data.forecast.forecastday[0].hour.find((item) => {
+        const hour = new Date(item.time).getHours();
         return hour === 12; // Өдрийн 12 цагийн мэдээлэл
       });
-
-      const nightData = data.list.find((item) => {
-        const hour = new Date(item.dt_txt).getHours();
+  
+      const nightData = data.forecast.forecastday[0].hour.find((item) => {
+        const hour = new Date(item.time).getHours();
         return hour === 0; // Шөнийн 12 цагийн мэдээлэл
       });
-
+  
       setWeatherData({
         day: {
-          date: dayData?.dt_txt.split(" ")[0],
-          maxTemp: dayData?.main.temp_max,
-          minTemp: dayData?.main.temp_min,
-          condition: dayData?.weather[0].description,
+          date: dayData?.time.split(" ")[0],
+          maxTemp: dayData?.temp_c,
+          minTemp: dayData?.temp_c, // you can modify to actual minTemp if needed
+          condition: dayData?.condition.text,
         },
         night: {
-          date: nightData?.dt_txt.split(" ")[0],
-          maxTemp: nightData?.main.temp_max,
-          minTemp: nightData?.main.temp_min,
-          condition: nightData?.weather[0].description,
+          date: nightData?.time.split(" ")[0],
+          maxTemp: nightData?.temp_c,
+          minTemp: nightData?.temp_c,
+          condition: nightData?.condition.text,
         },
       });
     } catch (error) {
@@ -53,11 +55,27 @@ function App() {
       setLoading(false);
     }
   }, []);
+  
+
+  // Улсын жагсаалтыг татаж авах
+  const fetchCountries = async (query) => {
+    try {
+      const response = await fetch(`https://countriesnow.space/api/v0.1/countries`);
+      const data = await response.json();
+      const filteredCountries = data.data.filter((country) =>
+        country.name.toLowerCase().includes(query.toLowerCase())
+      );
+      setSuggestedCountries(filteredCountries);  // Хэрэглэгчийн хайлт дээр үндэслэн улсуудаа харуулна
+    } catch (error) {
+      console.error("Error fetching country list:", error);
+      setSuggestedCountries([]);
+    }
+  };
 
   // Хотын жагсаалт татах
   const fetchCities = async (country) => {
     try {
-      const response = await fetch(`https://countriesnow.space/api/v0.1/countries=${country}`);
+      const response = await fetch(`https://countriesnow.space/api/v0.1/countries/cities?q=${country}`);
       const data = await response.json();
       setSuggestedCities(data.data || []);
     } catch (error) {
@@ -76,6 +94,12 @@ function App() {
     }
   };
 
+  const handleCountrySelect = (country) => {
+    setCountriesSearch(country.name);
+    fetchCities(country.name);  // Хотын жагсаалтыг татах
+    setSuggestedCountries([]);
+  };
+
   const handleCitySelect = (city) => {
     setCountriesSearch(city);
     fetchWeatherData(city);
@@ -90,15 +114,25 @@ function App() {
           value={countriesSearch}
           onChange={(e) => {
             setCountriesSearch(e.target.value);
-            fetchCities(e.target.value);  // Хотоор хайлт хийх
+            fetchCountries(e.target.value);  // Улсаар хайлт хийх
           }}
-          placeholder="Search for a city"
+          placeholder="Search for a country or city"
           className="search-input"
         />
         <button onClick={handleSearch} className="search-button">
           Search
         </button>
       </div>
+
+      {suggestedCountries.length > 0 && (
+        <ul className="suggested-countries-list">
+          {suggestedCountries.map((country, index) => (
+            <li key={index} onClick={() => handleCountrySelect(country)}>
+              {country.name}
+            </li>
+          ))}
+        </ul>
+      )}
 
       {suggestedCities.length > 0 && (
         <ul className="suggested-cities-list">
@@ -125,7 +159,7 @@ function App() {
         <div className="weather-container">
           <div className="day-weather">
             <WeatherCard
-              title="Өдрийн цаг агаар"
+              title="Өдөр"
               date={weatherData.day.date}
               maxTemp={weatherData.day.maxTemp}
               minTemp={weatherData.day.minTemp}
@@ -134,7 +168,7 @@ function App() {
           </div>
           <div className="night-weather">
             <WeatherCard
-              title="Шөнийн цаг агаар"
+              title="Шөнө"
               date={weatherData.night.date}
               maxTemp={weatherData.night.maxTemp}
               minTemp={weatherData.night.minTemp}
