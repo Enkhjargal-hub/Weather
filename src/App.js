@@ -2,7 +2,7 @@ import "./App.css";
 import { useState, useEffect, useCallback } from "react";
 import WeatherCard from "./components/WeatherCard";
 
-const WeatherApiKey = "5c16f05f953742f5b6b22254251501";  // Таны API түлхүүр
+const WeatherApiKey = "5c16f05f953742f5b6b22254251501"; 
 
 function App() {
   const [countriesSearch, setCountriesSearch] = useState("Ulaanbaatar");
@@ -13,7 +13,7 @@ function App() {
   const [isDayTime, setIsDayTime] = useState(true); // Өдөр эсвэл шөнийн өгөгдлийг хянах
   const [selectedLocation, setSelectedLocation] = useState({ city: "", country: "" });
 
-  // Fetch weather data
+  
   const fetchWeatherData = useCallback(async (city, timeOfDay = 'day') => {
     setLoading(true);
     try {
@@ -161,19 +161,20 @@ function App() {
 
       {loading && <p className="loading">Loading</p>}
 
-      {/* Display selected city and country */}
+
       {selectedLocation.city && selectedLocation.country && (
         <div>
           <h2>{selectedLocation.city}, {selectedLocation.country}</h2>
         </div>
       )}
 
-      {/* Weather container */}
+      {/*  Weather container */}
       <div className="weather-container">
         {isDayTime && weatherData.day && (
           <div className="day-weather">
             <WeatherCard
               title="Өдөр"
+              photo="/img/0657324bf17d1bd5169b60a7fbcb80b1.png"
               date={weatherData.day.date}
               maxTemp={weatherData.day.maxTemp}
               minTemp={weatherData.day.minTemp}
@@ -185,6 +186,7 @@ function App() {
           <div className="night-weather">
             <WeatherCard
               title="Шөнө"
+              photo="/img/f01b7c0c0765dab6de4f9f5cbb022e1d.png"
               date={weatherData.night.date}
               maxTemp={weatherData.night.maxTemp}
               minTemp={weatherData.night.minTemp}
