@@ -2,7 +2,7 @@ import "./App.css";
 import { useState, useEffect, useCallback } from "react";
 import WeatherCard from "./components/WeatherCard";
 
-const WeatherApiKey = "5c16f05f953742f5b6b22254251501"; 
+const WeatherApiKey = "5c16f05f953742f5b6b22254251501";
 
 function App() {
   const [countriesSearch, setCountriesSearch] = useState("Ulaanbaatar");
@@ -11,10 +11,12 @@ function App() {
   const [weatherData, setWeatherData] = useState({ day: null, night: null });
   const [loading, setLoading] = useState(false);
   const [isDayTime, setIsDayTime] = useState(true); // Өдөр эсвэл шөнийн өгөгдлийг хянах
-  const [selectedLocation, setSelectedLocation] = useState({ city: "", country: "" });
+  const [selectedLocation, setSelectedLocation] = useState({
+    city: "",
+    country: "",
+  });
 
-  
-  const fetchWeatherData = useCallback(async (city, timeOfDay = 'day') => {
+  const fetchWeatherData = useCallback(async (city, timeOfDay = "day") => {
     setLoading(true);
     try {
       const response = await fetch(
@@ -61,7 +63,9 @@ function App() {
   // Улсын жагсаалтыг татаж авах
   const fetchCountries = async (query) => {
     try {
-      const response = await fetch(`https://countriesnow.space/api/v0.1/countries`);
+      const response = await fetch(
+        `https://countriesnow.space/api/v0.1/countries`
+      );
       const data = await response.json();
       const filteredCountries = data.data.filter((country) =>
         country.name.toLowerCase().includes(query.toLowerCase())
@@ -76,7 +80,9 @@ function App() {
   // Хотын жагсаалт татах
   const fetchCities = async (country) => {
     try {
-      const response = await fetch(`https://countriesnow.space/api/v0.1/countries/cities?q=${country}`);
+      const response = await fetch(
+        `https://countriesnow.space/api/v0.1/countries/cities?q=${country}`
+      );
       const data = await response.json();
       setSuggestedCities(data.data || []);
     } catch (error) {
@@ -89,38 +95,37 @@ function App() {
     fetchWeatherData(countriesSearch);
   }, [countriesSearch, fetchWeatherData]);
 
-  // Search handler
   const handleSearch = () => {
     if (countriesSearch.trim() !== "") {
       fetchWeatherData(countriesSearch);
     }
   };
 
-  // Country selection handler
   const handleCountrySelect = (country) => {
     setCountriesSearch(country.name);
-    fetchCities(country.name);  // Хотын жагсаалтыг татах
+    fetchCities(country.name); // Хотын жагсаалтыг татах
     setSuggestedCountries([]);
   };
 
-  // City selection handler
   const handleCitySelect = (city) => {
-    const cityAndCountry = `${city}, ${countriesSearch.split(',')[1] || ""}`; // Combine city and country
+    const cityAndCountry = `${city}, ${countriesSearch.split(",")[1] || ""}`; // Combine city and country
     setCountriesSearch(cityAndCountry);
-    setSelectedLocation({ city, country: countriesSearch.split(',')[1] || "" }); // Store selected city and country
+    setSelectedLocation({ city, country: countriesSearch.split(",")[1] || "" }); // Store selected city and country
     fetchWeatherData(city);
     setSuggestedCities([]);
   };
 
   return (
     <div className={`app-container ${isDayTime ? "day" : "night"}`}>
+      <h1 className="text-3xl font-bold underline flex flex-col items-center justify-center">Hello world!</h1>
+
       <div className="search-container">
         <input
           type="text"
           value={countriesSearch}
           onChange={(e) => {
             setCountriesSearch(e.target.value);
-            fetchCountries(e.target.value);  // Улсаар хайлт хийх
+            fetchCountries(e.target.value); // Улсаар хайлт хийх
           }}
           placeholder="Search for a city"
           className="search-input"
@@ -151,20 +156,33 @@ function App() {
       )}
 
       <div className="button-container">
-        <button onClick={() => { setIsDayTime(true); fetchWeatherData(countriesSearch, 'day'); }} className="day-button">
+        <button
+          onClick={() => {
+            setIsDayTime(true);
+            fetchWeatherData(countriesSearch, "day");
+          }}
+          className="day-button"
+        >
           Өдөр
         </button>
-        <button onClick={() => { setIsDayTime(false); fetchWeatherData(countriesSearch, 'night'); }} className="night-button">
+        <button
+          onClick={() => {
+            setIsDayTime(false);
+            fetchWeatherData(countriesSearch, "night");
+          }}
+          className="night-button"
+        >
           Шөнө
         </button>
       </div>
 
       {loading && <p className="loading">Loading</p>}
 
-
       {selectedLocation.city && selectedLocation.country && (
         <div>
-          <h2>{selectedLocation.city}, {selectedLocation.country}</h2>
+          <h2>
+            {selectedLocation.city}, {selectedLocation.country}
+          </h2>
         </div>
       )}
 
