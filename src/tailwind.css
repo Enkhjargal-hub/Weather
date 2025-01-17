@@ -17,7 +17,7 @@
   }
 
   .weather-container {
-    @apply absolute top-[80px] left-0 right-0 px-20 flex justify-between;
+    @apply absolute top-[80px] left-0 right-0 px-20 flex justify-between font-bold;
   }
 
   .weather-side {
@@ -25,7 +25,7 @@
   }
 
   .left {
-    @apply text-center;
+    @apply text-center ;
   }
 
   .right {
@@ -62,5 +62,11 @@
 
   .weather-image {
     @apply flex justify-center items-center;
+  }
+  .title {
+    @apply font-bold 
+  }
+  .weather-container h3 {
+    @apply text-2xl
   }
 }

@@ -8,9 +8,10 @@
     max-width: 300px;
   }
   
-  .weather-card h2 {
-    font-size: 1.5em;
+  .weather-card h3 {
+    font-weight: 300;
     margin-bottom: 10px;
+    font-weight: bold;
   }
   
   .weather-card p {

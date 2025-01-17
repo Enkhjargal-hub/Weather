@@ -67,57 +67,55 @@ function App() {
 
   return (
     <div className="app-container">
-  <img src={Zurag} alt="Background" className="background-image" />
-  <div className="search-container">
-    <input
-      type="text"
-      value={countriesSearch}
-      onChange={(e) => setCountriesSearch(e.target.value)}
-      placeholder="Search for a city"
-      className="search-input"
-    />
-    <button onClick={handleSearch} className="search-button">
-      Search
-    </button>
-  </div>
+      <img src={Zurag} alt="Background" className="background-image" />
+      <div className="search-container">
+        <input
+          type="text"
+          value={countriesSearch}
+          onChange={(e) => setCountriesSearch(e.target.value)}
+          placeholder="Search for a city"
+          className="search-input"
+        />
+        <button onClick={handleSearch} className="search-button">
+          Search
+        </button>
+      </div>
 
-  {loading && <p className="loading">Loading</p>}
+      {loading && <p className="loading">Loading</p>}
 
-
-  <img src={Zurag} alt="Day" />
+      <img src={Zurag} alt="Day" />
   <img src={Night} alt="Night" />
 
-  <div className="weather-container">  
-    {/* Day Weather Section */}
-    <div className="weather-side left">
-      {weatherData.day && (
-        <WeatherCard
-          title="Өдөр"
-          photo={Day}  
-          date={weatherData.day.date}
-          maxTemp={weatherData.day.maxTemp}
-          minTemp={weatherData.day.minTemp}
-          condition={weatherData.day.condition}
-        />
-      )}
-    </div>
+      <div className="weather-container">  
+        {/* Day Weather Section */}
+        <div className="weather-side left">
+          {weatherData.day && (
+            <WeatherCard
+              title={`${countriesSearch}`} // Хайсан хотын нэр гарчигт орно
+              photo={Day}  
+              date={weatherData.day.date}
+              maxTemp={weatherData.day.maxTemp}
+              minTemp={weatherData.day.minTemp}
+              condition={weatherData.day.condition}
+            />
+          )}
+        </div>
 
-    {/* Night Weather Section */}
-    <div className="weather-side right">
-      {weatherData.night && (
-        <WeatherCard
-          title="Шөнө"
-          photo={Night} 
-          date={weatherData.night.date}
-          maxTemp={weatherData.night.maxTemp}
-          minTemp={weatherData.night.minTemp}
-          condition={weatherData.night.condition}
-        />
-      )}
+        {/* Night Weather Section */}
+        <div className="weather-side right">
+          {weatherData.night && (
+            <WeatherCard
+              title={` ${countriesSearch}`} // Хайсан хотын нэр гарчигт орно
+              photo={Night} 
+              date={weatherData.night.date}
+              maxTemp={weatherData.night.maxTemp}
+              minTemp={weatherData.night.minTemp}
+              condition={weatherData.night.condition}
+            />
+          )}
+        </div>
+      </div>
     </div>
-  </div>
-</div>
-
   );
 }
 
