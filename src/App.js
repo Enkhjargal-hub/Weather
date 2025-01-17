@@ -15,7 +15,7 @@ function App() {
   const [loading, setLoading] = useState(false);
 
   const fetchWeatherData = useCallback(async (city) => {
-    setLoading(true);
+    setLoading(true); //API ogogdol duudna
     try {
       const response = await fetch(
         `https://api.weatherapi.com/v1/forecast.json?key=${WeatherApiKey}&q=${city}&days=2`,
@@ -57,13 +57,13 @@ function App() {
 
   useEffect(() => {
     fetchWeatherData(countriesSearch);
-  }, [countriesSearch, fetchWeatherData]);
+  }, [countriesSearch, fetchWeatherData]); //Ulsiin ner data oorchlogdoh burt medeelel tatagdana
 
   const handleSearch = () => {
     if (countriesSearch.trim() !== "") {
       fetchWeatherData(countriesSearch);
     }
-  };
+  };  //Hooson text bish hotiin nereer ogogdol avna
 
   return (
     <div className="app-container">
@@ -87,7 +87,7 @@ function App() {
   <img src={Zurag} alt="Day" />
   <img src={Night} alt="Night" />
 
-  <div className="weather-container">
+  <div className="weather-container">  
     {/* Day Weather Section */}
     <div className="weather-side left">
       {weatherData.day && (
