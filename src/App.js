@@ -83,7 +83,7 @@ function App() {
 
       {loading && <p className="loading">Loading</p>}
 
-      <img src={Zurag} alt="Day" />
+      <img className='Back-image' src={Zurag} alt="Day" />
   <img src={Night} alt="Night" />
 
       <div className="weather-container">  
