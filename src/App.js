@@ -66,29 +66,29 @@ function App() {
   };  //Hooson text bish hotiin nereer ogogdol avna
 
   return (
-    <div className="app-container">
-      <img src={Zurag} alt="Background" className="background-image" />
-      <div className="search-container">
+    <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
+      <img src={Zurag} alt="Background" className="absolute top-0 left-0 w-full h-full object-cover -z-10" />
+      <div className="absolute top-5 left-5 z-10">
         <input
           type="text"
           value={countriesSearch}
           onChange={(e) => setCountriesSearch(e.target.value)}
           placeholder="Search for a city"
-          className="search-input"
+          className="p-2 text-lg"
         />
-        <button onClick={handleSearch} className="search-button">
+        <button onClick={handleSearch} className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-700">
           Search
         </button>
       </div>
 
-      {loading && <p className="loading">Loading</p>}
+      {loading && <p className="text-center text-xl font-bold mt-5">Loading</p>}
 
-      <img className='Back-image' src={Zurag} alt="Day" />
+      <img className='w-full h-auto absolute top-0 left-0 -z-10' src={Zurag} alt="Day" />
   <img src={Night} alt="Night" />
 
-      <div className="weather-container">  
+      <div className="absolute top-[80px] left-0 right-0 px-20 flex justify-between font-bold">  
         {/* Day Weather Section */}
-        <div className="weather-side left">
+        <div className="w-[38%] h-[68%] flex justify-center items-center bg-white/80 p-5 rounded-lg shadow-lg text-center">
           {weatherData.day && (
             <WeatherCard
               title={`${countriesSearch}`} // Хайсан хотын нэр гарчигт орно
@@ -102,7 +102,7 @@ function App() {
         </div>
 
         {/* Night Weather Section */}
-        <div className="weather-side right">
+        <div className="w-[38%] h-[68%] flex justify-center items-center bg-white/80 p-5 rounded-lg shadow-lg text-center">
           {weatherData.night && (
             <WeatherCard
               title={` ${countriesSearch}`} // Хайсан хотын нэр гарчигт орно
