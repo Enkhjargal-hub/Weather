@@ -26,8 +26,12 @@ function App() {
       const dayData = data.forecast.forecastday[0].hour.find((item) => {
         const hour = new Date(item.time).getHours();
         return hour === 12;
-      });
+      }); 
+      // Цаг агаарын мэдээллээс цаг тутмын мэдээллийг авч байна. 
+      //Түүн дундаасаа 12 цагтай тохирох мэдээллийг хайж байна. 
+      //Тохирох мэдээллээ олчихоод dayData руу хадгалж байна.
 
+      
       const nightData = data.forecast.forecastday[0].hour.find((item) => {
         const hour = new Date(item.time).getHours();
         return hour === 0;
