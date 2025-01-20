@@ -1,4 +1,4 @@
-import './tailwind.css';
+
 import { useState, useEffect, useCallback } from "react";
 import WeatherCard from "./components/WeatherCard";
 import Day from './img/Day.png';  
