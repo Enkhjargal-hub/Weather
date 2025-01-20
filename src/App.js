@@ -67,7 +67,7 @@ function App() {
 
   return (
     <div className="relative w-full h-screen bg-gray-100 overflow-hidden">
-      <img src={Zurag} alt="Background" className="absolute top-0 left-0 w-full h-full object-cover -z-10" />
+      <img src={Zurag} alt="Zurag" className="absolute top-0 left-0 w-full h-full object-cover -z-10" />
       <div className="absolute top-5 left-5 z-10">
         <input
           type="text"
@@ -83,8 +83,8 @@ function App() {
 
       {loading && <p className="text-center text-xl font-bold mt-5">Loading</p>}
 
-      <img className='w-full h-auto absolute top-0 left-0 -z-10' src={Zurag} alt="Day" />
-  <img src={Night} alt="Night" />
+      <img className='w-full h-auto absolute top-0 left-0 -z-10' src={Zurag} alt="Zurag" />
+  <img src={Zurag} alt="Zurag" />
 
       <div className="absolute top-[80px] left-0 right-0 px-20 flex justify-between font-bold">  
         {/* Day Weather Section */}
