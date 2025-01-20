@@ -84,7 +84,7 @@ function App() {
       {loading && <p className="text-center text-xl font-bold mt-5">Loading</p>}
 
       <img className='w-full h-auto absolute top-0 left-0 -z-10' src={Zurag} alt="Zurag" />
-  <img src={Zurag} alt="Zurag" />
+  <img className="justify-center items-center" src={Zurag} alt="Zurag" />
 
       <div className="absolute top-[80px] left-0 right-0 px-20 flex justify-between font-bold">  
         {/* Day Weather Section */}
